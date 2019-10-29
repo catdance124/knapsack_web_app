@@ -15,10 +15,6 @@
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
 </head>
 
-<style>
-.in {width:50px}
-</style>
-
 <body>
     <div class="container-fluid">
         <p class="btn btn-primary">USER</p>
@@ -82,6 +78,7 @@
 
 <script>
     updateText = function () {
+        // ボタンが押されたら加算処理
         let all_weights = 0
         let all_capacity = 0
         let all_values = 0
@@ -92,8 +89,36 @@
                 all_values += {{item.value}}
             }
         {% endfor %}
+        // 合計を出力
         document.getElementById("all_weight").innerHTML = all_weights;
         document.getElementById("all_capacity").innerHTML = all_capacity;
         document.getElementById("all_value").innerHTML = all_values;
+        // 選択されたものがlimitを超えていたとき
+        if (all_capacity >= {{capacity_limit}} || all_weights >= {{weight_limit}}){
+            // これ以上選択不可能に
+            {% for item in items %}
+            if (!$('#{{item.id}}').prop('checked')){
+                $('#{{item.id}}').bootstrapToggle('disable')
+            }
+            {% endfor %}
+            // 色を変える ... 超えている:赤，ちょうど：緑
+            if (all_capacity == {{capacity_limit}}){
+                document.getElementById("all_weight").style.backgroundColor = "#ccffcc";
+            } else {
+                document.getElementById("all_weight").style.backgroundColor = "#F0E0E0";
+            }
+            if (all_weights == {{ weight_limit }}){
+                document.getElementById("all_capacity").style.backgroundColor = "#ccffcc";
+            } else {
+                document.getElementById("all_capacity").style.backgroundColor = "#F0E0E0";
+            }
+        // 超えていないとき
+        } else {
+            {% for item in items %}
+            $('#{{item.id}}').bootstrapToggle('enable')
+            document.getElementById("all_weight").style.backgroundColor = "white";
+            document.getElementById("all_capacity").style.backgroundColor = "white";
+            {% endfor %}
+        }
     };
 </script>
